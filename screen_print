@@ -1,0 +1,201 @@
+Using published signature data from: /research_jude/rgs01_jude/groups/greengrp/home/spoudel1/GreenLab_Projects/Caitlin/publish_fig/tcga_data/panimmune_signature.df.Rda
+Using published score column: T.cells.CD8
+Standardized columns not found; computing standardized expression values.
+Warning message:
+In stat_cor(method = "pearson", label.x.npc = 0.05, label.y.npc = 0.98,  :
+  Ignoring unknown parameters: `label.fill`
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+
+Call:
+lm(formula = log10_TMB_perMB ~ DFNA5, data = final_master.df)
+
+Residuals:
+     Min       1Q   Median       3Q      Max
+-1.90435 -0.35501 -0.02327  0.30711  2.43931
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)
+(Intercept)  0.209039   0.005859   35.68   <2e-16 ***
+DFNA5       -0.055092   0.003432  -16.05   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.5416 on 8544 degrees of freedom
+Multiple R-squared:  0.02928,   Adjusted R-squared:  0.02917
+F-statistic: 257.7 on 1 and 8544 DF,  p-value: < 2.2e-16
+
+DFNA5 slope (all Primary Tumors): -0.0551 (Std. Error: 0.0034)
+Warning message:
+In stat_cor(method = "pearson", label.x.npc = 0.05, label.y.npc = 0.98,  :
+  Ignoring unknown parameters: `label.fill`
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+
+Call:
+lm(formula = log10_TMB_perMB ~ CAS.PA, data = final_master.df)
+
+Residuals:
+     Min       1Q   Median       3Q      Max
+-2.17365 -0.32774 -0.02018  0.31277  2.46041
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)
+(Intercept) 0.209438   0.005767   36.31   <2e-16 ***
+CAS.PA      0.138223   0.005945   23.25   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.5331 on 8544 degrees of freedom
+Multiple R-squared:  0.0595,    Adjusted R-squared:  0.05939
+F-statistic: 540.5 on 1 and 8544 DF,  p-value: < 2.2e-16
+
+PA slope (all Primary Tumors): 0.1382 (Std. Error: 0.0059)
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+
+Call:
+lm(formula = log10_TMB_perMB ~ CAS.PA * DFNA5_group, data = df_DFNA5)
+
+Residuals:
+     Min       1Q   Median       3Q      Max
+-2.11318 -0.28666 -0.03174  0.23298  2.47185
+
+Coefficients:
+                       Estimate Std. Error t value Pr(>|t|)
+(Intercept)             0.46402    0.01326  34.986  < 2e-16 ***
+CAS.PA                  0.21558    0.01422  15.161  < 2e-16 ***
+DFNA5_groupHigh        -0.25467    0.01817 -14.018  < 2e-16 ***
+CAS.PA:DFNA5_groupHigh -0.06793    0.01772  -3.834 0.000129 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.4721 on 2873 degrees of freedom
+Multiple R-squared:  0.1792,    Adjusted R-squared:  0.1783
+F-statistic: 209.1 on 3 and 2873 DF,  p-value: < 2.2e-16
+
+Comparison between Low and High DFNA5 groups for the CAS.PA effect yields a p-value of 0.000129
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+
+Call:
+lm(formula = log10_TMB_perMB ~ DFNA5 * CASPA_group, data = df_CASPA)
+
+Residuals:
+     Min       1Q   Median       3Q      Max
+-1.99587 -0.31131 -0.03031  0.30916  2.60013
+
+Coefficients:
+                       Estimate Std. Error t value Pr(>|t|)
+(Intercept)            0.021126   0.014398   1.467   0.1424
+DFNA5                 -0.057913   0.007058  -8.205 3.51e-16 ***
+CASPA_groupHigh        0.378845   0.020350  18.617  < 2e-16 ***
+DFNA5:CASPA_groupHigh -0.025037   0.012129  -2.064   0.0391 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.5259 on 2724 degrees of freedom
+Multiple R-squared:  0.1509,    Adjusted R-squared:   0.15
+F-statistic: 161.4 on 3 and 2724 DF,  p-value: < 2.2e-16
+
+Comparison between Low and High CAS.PA  groups for the DFNA5 effect yields a p-value of 0.0391
+               Df Sum Sq Mean Sq F value   Pr(>F)
+CAS.PA          1  153.6  153.64  558.70  < 2e-16 ***
+DFNA5           1   76.1   76.15  276.91  < 2e-16 ***
+CAS.PA:DFNA5    1    3.5    3.46   12.57 0.000393 ***
+Residuals    8542 2349.0    0.27
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+Warning message:
+Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead.
+Warning messages:
+1: In grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <e2>
+2: In grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <80>
+3: In grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <93>
+4: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <e2>
+5: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <80>
+6: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <93>
+7: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <e2>
+8: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <80>
+9: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <93>
+There were 18 warnings (use warnings() to see them)
+               Df Sum Sq Mean Sq F value   Pr(>F)
+CAS.PB          1  269.3  269.28 1027.05  < 2e-16 ***
+DFNA5           1   68.9   68.93  262.92  < 2e-16 ***
+CAS.PB:DFNA5    1    4.4    4.39   16.76 4.28e-05 ***
+Residuals    8542 2239.6    0.26
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+Warning messages:
+1: In grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <e2>
+2: In grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <80>
+3: In grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <93>
+4: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <e2>
+5: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <80>
+6: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <93>
+7: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <e2>
+8: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <80>
+9: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <93>
+There were 18 warnings (use warnings() to see them)
+                    Df Sum Sq Mean Sq F value  Pr(>F)
+T.cells.CD8          1   24.7   24.69  87.299 < 2e-16 ***
+DFNA5                1   80.0   80.01 282.854 < 2e-16 ***
+T.cells.CD8:DFNA5    1    2.3    2.32   8.205 0.00419 **
+Residuals         8015 2267.1    0.28
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+527 observations deleted due to missingness
+Warning messages:
+1: In grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <e2>
+2: In grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <80>
+3: In grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <93>
+4: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <e2>
+5: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <80>
+6: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <93>
+7: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <e2>
+8: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <80>
+9: In grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  :
+  conversion failure on 'Johnson–Neyman Plot' in 'mbcsToSbcs': dot substituted for <93>
+There were 18 warnings (use warnings() to see them)
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+Facet plot for GSDMA/B/C/D vs. log10 TMB saved successfully!
+

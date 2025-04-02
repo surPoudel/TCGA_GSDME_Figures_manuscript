@@ -1,0 +1,47 @@
+# Get gene expression of GSDME/DFNA5.
+# TCGA gene expression by RNAseq, mean-normalized (per gene) across all
+# TCGA cohorts. Values in this dataset are generated at UCSC by combining
+# "gene expression RNAseq" values of all TCGA cohorts, values are then
+# mean-centered per gene, then extracting the converted data only belongs
+# to the this cohort.For comparing data within this cohort, we recommend
+# to use the "gene expression RNAseq" dataset. For questions regarding
+# the gene expression of this particular cohort in relation to other types
+# tumors, you can use the pancan normalized version of the "gene expression
+# RNAseq" data. For comparing with data outside TCGA, we recommend using
+# the percentile version if the non-TCGA data is normalized by percentile
+# ranking. For more information, please see our Data FAQ: here.
+
+
+# Load required datasets
+# The data were downloaded from [the paper](https://elifesciences.org/articles/49020) entitled "Antigen presentation and tumor immunogenicity in cancer immunotherapy response prediction". Originally, the TCGA mutation data were retrieved via R package PoisonAlien/TCGAmutations. However, the package is not available. The specific file is stored on GitHub <https://github.com/XSLiuLab/tumor-immunogenicity-score/blob/master/report/results/TCGA_ALL.RData> and save in the place shown in the code below.
+
+
+
+default:
+
+  # working_dir: "/research/groups/greengrp/home/spoudel1/GreenLab_Projects/Caitlin/pipeline"
+  output_dir: "/research_jude/rgs01_jude/groups/greengrp/home/spoudel1/GreenLab_Projects/Caitlin/Figure4_pipeline/panelB_F_top_bottom_oneSD"
+  tcga_data_dir: "/research_jude/rgs01_jude/groups/greengrp/home/spoudel1/GreenLab_Projects/Caitlin/Figure4_pipeline/fetch_tcga"
+  sample_type_file: "/research_jude/rgs01_jude/groups/greengrp/home/spoudel1/GreenLab_Projects/Caitlin/Figure4_pipeline/fetch_tcga/tcga_data/TCGA.PANCAN.sample_type.df.Rda"
+  gsdm_file: "/research_jude/rgs01_jude/groups/greengrp/home/spoudel1/GreenLab_Projects/Caitlin/Figure4_pipeline/fetch_tcga/GSDMs.PANCAN.df.Rda"
+  gex_file: "/research_jude/rgs01_jude/groups/greengrp/home/spoudel1/GreenLab_Projects/Caitlin/Figure4_pipeline/fetch_tcga/tcga_data/TCGA.cohorts.GEX_be.tb.Rda"
+  tmb_data_file: "/research/groups/greengrp/home/spoudel1/GreenLab_Projects/Caitlin/tumor-immunogenicity-score/report/results/TCGA_ALL.RData"
+
+  # Option A: Gene list method
+  gene_list: ["PRF1", "GZMA", "GZMB", "DFNA5", "GSDMA", "GSDMB", "GSDMC", "GSDMD"]
+  # composite_name: "CAS.PA"
+
+  # Option B: GMT file method
+  # gmt_file: "/path/to/your_geneset.gmt"
+  # gene_set_name: "HALLMARK_T_CELL_INFLAMMATORY_RESPONSE"
+  # composite_name: "CAS.PA"
+
+  # Option C: Published signature method
+  published_score_df: "/research_jude/rgs01_jude/groups/greengrp/home/spoudel1/GreenLab_Projects/Caitlin/publish_fig/tcga_data/panimmune_signature.df.Rda"
+  published_score_column: "T.cells.CD8"
+  sample_name_column: "Sample"
+
+  xena_script: "/research/groups/greengrp/home/spoudel1/GreenLab_Projects/Caitlin/publish_fig/Xena.R"
+
+  # Number of parallel workers
+  workers: 6

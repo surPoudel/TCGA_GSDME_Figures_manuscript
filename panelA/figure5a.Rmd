@@ -1,0 +1,168 @@
+---
+title: "GSDME/DFNA5 PanCan"
+output:
+  workflowr::wflow_html:
+    toc: true
+    number_sections: true
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load necessary libraries
+source("/research/groups/greengrp/home/spoudel1/GreenLab_Projects/Caitlin/publish_fig/Xena.R")
+library(tidyverse)
+library(ggplot2)
+library(glue)
+library(ggpubr)
+library(ggsci)
+library(patchwork)
+
+
+# --------------------------
+# Modified Function: Read Gene Expression Data
+# --------------------------
+# The function now accepts a 'base_dir' so that if the filename is not found 
+# in its current form, it will look relative to tcga_data_dir.
+read_file_id_on_col1 <- function(id_on_col1, filenames, base_dir) {
+  dfLst <- lapply(filenames, function(filename) {
+    full_filename <- filename
+    if (!file.exists(full_filename)) {
+      # If the file is not found, try prepending the base directory.
+      full_filename <- file.path(base_dir, filename)
+    }
+    if (!file.exists(full_filename)) {
+      warning("File not found: ", full_filename)
+      return(NULL)
+    }
+    message("Processing file: ", full_filename)
+    col1 <- data.table::fread(full_filename, select = 1)[[1]]
+    if (!id_on_col1 %in% col1) {
+      warning("Gene ", id_on_col1, " not found in ", full_filename)
+      return(NULL)
+    }
+    row_idx <- which(id_on_col1 == col1)
+    if (length(row_idx) == 0) {
+      warning("No matching rows found for ", id_on_col1, " in ", full_filename)
+      return(NULL)
+    }
+    df <- read_row(full_filename, row_idx)
+    df$File <- full_filename
+    df
+  })
+  dfLst <- Filter(Negate(is.null), dfLst)
+  if (length(dfLst) == 0) {
+    warning("No data found for gene ", id_on_col1)
+    return(NULL)
+  }
+  do.call(rbind, dfLst)
+}
+
+
+
+# Set local directories (adjust these paths as needed)
+MC030_GSDME_LOCAL <- "/research_jude/rgs01_jude/groups/greengrp/home/spoudel1/GreenLab_Projects/Caitlin/Figure4_pipeline/panelA"
+data_dir <- "/research_jude/rgs01_jude/groups/greengrp/home/spoudel1/GreenLab_Projects/Caitlin/Figure4_pipeline/fetch_tcga/tcga_data"
+
+# Create directories if they don't exist
+if (!dir.exists(MC030_GSDME_LOCAL)) {
+  dir.create(MC030_GSDME_LOCAL, recursive = TRUE)
+}
+
+# Load the RNA-seq gene expression data
+load(file.path(data_dir, "TCGA.cohorts.GEX_be.tb.Rda"))
+
+# Filter out cohorts COADREAD, LUNG, and GBMLGG
+TCGA.cohorts.GEX_be.flt.tb <- TCGA.cohorts.GEX_be.tb %>%
+  filter(!Cohort_symbol %in% c("COADREAD", "LUNG", "GBMLGG"))
+
+# Load GSDME/DFNA5 expression data
+GSDME.gex_be.ldf <- read_file_id_on_col1(id_on_col1 = "DFNA5", filenames = TCGA.cohorts.GEX_be.flt.tb$destfiles, base_dir = data_dir)
+
+# Load sample type data
+load(file.path(data_dir, "TCGA.PANCAN.sample_type.df.Rda"))
+
+# Merge gene expression with sample type information
+GSDME.gex_be.sample_type.ldf <- GSDME.gex_be.ldf %>%
+  left_join(TCGA.cohorts.GEX_be.tb, by = c("File" = "destfiles")) %>%
+  rename(Sample_name = Name) %>%
+  left_join(TCGA.PANCAN.sample_type.df, by = "Sample_name")
+
+# Filter to primary tumor samples and calculate cohort statistics
+GSDME.gex_be.sample_type.primary_tumor.ldf <- GSDME.gex_be.sample_type.ldf %>%
+  filter(Sample_type == "Primary Tumor") %>%
+  group_by(Cohort_symbol) %>%
+  mutate(Cohort_sd = sd(DFNA5), Cohort_mean = mean(DFNA5))
+
+# Create a violin plot for GSDME/DFNA5 expression across TCGA cohorts
+GSDME.gex_be.sample_type.primary_tumor_by_cohort <- ggplot(data = GSDME.gex_be.sample_type.primary_tumor.ldf, 
+       aes(x = reorder(Cohort_symbol, Cohort_mean), y = DFNA5)) +
+  geom_violin(fill = "grey40") +
+  geom_boxplot(outlier.size = 0, outlier.shape = NA, width = 0.15, fill = "white") +
+  labs(x = "Cohort", y = "GSDME Expression") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  plot_annotation(
+    title = glue("GSDME expression across TCGA cohorts (primary tumors)"),
+    subtitle = glue(
+      "Expression is PANCAN normalized with batch effect correction."
+    ),
+    theme = theme(plot.caption = element_text(size = 7, hjust = 0))
+  )
+
+# Save the plot
+ggsave(
+  plot = GSDME.gex_be.sample_type.primary_tumor_by_cohort,
+  file = file.path(MC030_GSDME_LOCAL, "Figure_5a_GSDME.gex_be.sample_type.primary_tumor_by_cohort.pdf"),
+  width = 12, height = 6
+)
+
+
+# clean figures for publication and high quality
+#install.packages("svglite")
+library(svglite)
+
+# Create a violin plot for GSDME/DFNA5 expression across TCGA cohorts with black fonts
+GSDME.gex_be.sample_type.primary_tumor_by_cohort <- ggplot(data = GSDME.gex_be.sample_type.primary_tumor.ldf, 
+       aes(x = reorder(Cohort_symbol, Cohort_mean), y = DFNA5)) +
+  geom_violin(fill = "grey40") +
+  geom_boxplot(outlier.size = 0, outlier.shape = NA, width = 0.15, fill = "white") +
+  labs(x = "Cohort", y = "GSDME Expression") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, color = "black"),
+        axis.text.y = element_text(color = "black"),
+        axis.title.x = element_text(color = "black"),
+        axis.title.y = element_text(color = "black"),
+        plot.title = element_text(color = "black", hjust = 0.5),
+        plot.caption = element_text(size = 7, hjust = 0, color = "black")) +
+  plot_annotation(
+    title = glue("GSDME expression across TCGA cohorts (primary tumors)")
+  )
+
+# Save the plot in high resolution for publication
+# Save as PNG
+ggsave(
+  plot = GSDME.gex_be.sample_type.primary_tumor_by_cohort,
+  file = file.path(MC030_GSDME_LOCAL, "Figure5a_clean.png"),
+  width = 12, height = 6, dpi = 300
+)
+
+# Save as PDF
+ggsave(
+  plot = GSDME.gex_be.sample_type.primary_tumor_by_cohort,
+  file = file.path(MC030_GSDME_LOCAL, "Figure5a_clean.pdf"),
+  width = 12, height = 6
+)
+
+# If you want SVG, ensure svglite is installed first:
+# install.packages("svglite")
+# Save as SVG
+ggsave(
+  plot = GSDME.gex_be.sample_type.primary_tumor_by_cohort,
+  file = file.path(MC030_GSDME_LOCAL, "Figure5a_clean.svg"),
+  width = 12, height = 6
+)
+

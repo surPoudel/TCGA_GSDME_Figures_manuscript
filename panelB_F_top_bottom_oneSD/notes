@@ -1,0 +1,18 @@
+Figure 4B
+DFNA5 slope (all Primary Tumors): -0.0551 (Std. Error: 0.0034)
+
+Figure 5C
+PA slope (all Primary Tumors): 0.1382 (Std. Error: 0.0059)
+
+Figure 5D
+High and Low are defined by Mean -/+ 1SD
+Comparison between Low and High CAS.PA  groups for the DFNA5 effect yields a p-value of 0.0391
+
+the effect of DFNA5 on log10_TMB_perMB is significantly negative in the Low CASPA group (slope ≈ -0.058), and it becomes even more negative in the High CASPA group (slope ≈ -0.083) due to the interaction term. The p-value for the interaction (-0.02504, p = 0.0391) indicates that this difference in slopes between the Low and High groups is statistically significant.
+
+
+Figure 5E
+High and Low are defined by Mean -/+ 1SD
+Comparison between Low and High DFNA5 groups for the CAS.PA effect yields a p-value of 0.000129
+
+The very low p-values (< 2e-16 for the main effects and 0.000129 for the interaction term) indicate that all these coefficients are statistically significant. In practical terms, the effect of CAS.PA on log10 TMB per MB is significantly stronger (steeper) in the DFNA5 Low group compared to the DFNA5 High group.

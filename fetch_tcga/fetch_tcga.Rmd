@@ -1,0 +1,149 @@
+---
+title: "TCGA Data Fetching and Preprocessing"
+author: "Suresh Poudel"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+# --------------------------
+# Modified Function: Read Gene Expression Data
+# --------------------------
+# The function now accepts a 'base_dir' so that if the filename is not found 
+# in its current form, it will look relative to tcga_data_dir.
+read_file_id_on_col1 <- function(id_on_col1, filenames, base_dir) {
+  dfLst <- lapply(filenames, function(filename) {
+    full_filename <- filename
+    if (!file.exists(full_filename)) {
+      # If the file is not found, try prepending the base directory.
+      full_filename <- file.path(base_dir, filename)
+    }
+    if (!file.exists(full_filename)) {
+      warning("File not found: ", full_filename)
+      return(NULL)
+    }
+    message("Processing file: ", full_filename)
+    col1 <- data.table::fread(full_filename, select = 1)[[1]]
+    if (!id_on_col1 %in% col1) {
+      warning("Gene ", id_on_col1, " not found in ", full_filename)
+      return(NULL)
+    }
+    row_idx <- which(id_on_col1 == col1)
+    if (length(row_idx) == 0) {
+      warning("No matching rows found for ", id_on_col1, " in ", full_filename)
+      return(NULL)
+    }
+    df <- read_row(full_filename, row_idx)
+    df$File <- full_filename
+    df
+  })
+  dfLst <- Filter(Negate(is.null), dfLst)
+  if (length(dfLst) == 0) {
+    warning("No data found for gene ", id_on_col1)
+    return(NULL)
+  }
+  do.call(rbind, dfLst)
+}
+
+# set working directory
+setwd("/research_jude/rgs01_jude/groups/greengrp/home/spoudel1/GreenLab_Projects/Caitlin/Figure4_pipeline/fetch_tcga")
+
+# Load necessary libraries
+library(tidyverse)
+library(UCSCXenaTools)
+
+# Set directory for data download, can be changed as needed
+data_dir <- "tcga_data"
+
+# Create directory if it doesn't exist
+if (!dir.exists(data_dir)) {
+  dir.create(data_dir, recursive = TRUE)
+}
+
+# Set local cache directory for UCSCXenaTools
+UCSCXENATOOLS_LOCAL_CACHE <- data_dir
+
+# Fetch TCGA Pan-Cancer Atlas data
+TCGA.PANCAN.xh <- XenaData %>%
+  filter(XenaHostNames == "pancanAtlasHub") %>% 
+  XenaGenerate()
+
+# Download Pan-Cancer Atlas phenotype data
+TCGA.PANCAN.xh %>%
+  XenaFilter(filterDatasets = "TCGA_phenotype_denseDataOnlyDownload") %>%
+  XenaQuery() %>%
+  XenaDownload(destdir = UCSCXENATOOLS_LOCAL_CACHE, trans_slash = TRUE, force = FALSE) -> TCGA.PANCAN.pheno.tb
+
+# Save the phenotype data
+save(TCGA.PANCAN.pheno.tb, file = file.path(UCSCXENATOOLS_LOCAL_CACHE, "TCGA.PANCAN.pheno.tb.Rda"))
+
+# Load sample type data
+TCGA.PANCAN.sample_type.df <- read.table(
+  file = file.path(UCSCXENATOOLS_LOCAL_CACHE, "TCGA_phenotype_denseDataOnlyDownload.tsv.gz"),
+  header = TRUE, sep = "\t", stringsAsFactors = FALSE
+)
+
+# Rename columns for consistency
+colnames(TCGA.PANCAN.sample_type.df) <- c("Sample_name", "Sample_type_id", "Sample_type", "Primary_disease")
+
+# Display the dimensions and column names of the data
+dim(TCGA.PANCAN.sample_type.df)
+colnames(TCGA.PANCAN.sample_type.df)
+
+# Fetch RNA-seq data normalized for batch effects from PANCAN project
+TCGA.cohorts.xh <- XenaData %>%
+  filter(XenaHostNames == "tcgaHub", !str_detect(XenaCohorts, "PANCAN|FPPP")) %>%
+  XenaGenerate()
+
+# Download RNA-seq data
+TCGA.cohorts.GEX_be.xh <- XenaFilter(TCGA.cohorts.xh, filterDatasets = "HiSeqV2_PANCAN")
+TCGA.cohorts.GEX_be.tb <- XenaQuery(TCGA.cohorts.GEX_be.xh) %>%
+  XenaDownload(destdir = UCSCXENATOOLS_LOCAL_CACHE, trans_slash = TRUE, force = FALSE)
+
+# Add cohort symbol to the data
+TCGA.cohorts.GEX_be.tb <- TCGA.cohorts.GEX_be.tb %>%
+  dplyr::mutate(Cohort_symbol = sapply(fileNames, function(x) strsplit(x, split = "\\.")[[1]][2]))
+  
+# save for future use
+save(TCGA.cohorts.GEX_be.tb, file = file.path(data_dir, "TCGA.cohorts.GEX_be.tb.Rda"))
+
+  
+# Filter out cohorts COADREAD, LUNG, and GBMLGG
+TCGA.cohorts.GEX_be.flt.tb <- TCGA.cohorts.GEX_be.tb %>%
+  filter(!Cohort_symbol %in% c("COADREAD", "LUNG", "GBMLGG"))
+
+
+
+# Summary of the data
+print("Phenotype Data:")
+print(dim(TCGA.PANCAN.sample_type.df))
+print(head(TCGA.PANCAN.sample_type.df))
+
+print("RNA-seq Data:")
+print(dim(TCGA.cohorts.GEX_be.flt.tb))
+
+# Define GSDM genes and load their expression data
+GSDM_gene <- c("GSDMA", "GSDMB", "GSDMC", "GSDMD", "DFNA5", "DFNB59")
+GSDMs.PANCAN.ldfLst <- lapply(GSDM_gene, function(gene_symbol) {
+  read_file_id_on_col1(id_on_col1 = gene_symbol, filenames = TCGA.cohorts.GEX_be.flt.tb$destfiles)
+})
+GSDMs.PANCAN.df <- do.call(cbind, lapply(GSDMs.PANCAN.ldfLst, function(x) dplyr::select(x, -File, -Name)))
+GSDMs.PANCAN.df$Sample_name <- GSDMs.PANCAN.ldfLst[[1]]$Name
+
+# Save the GSDM expression DataFrame
+save(GSDMs.PANCAN.df, file = "GSDMs.PANCAN.df.Rda")
+
+
+# Save for future use
+save(TCGA.cohorts.GEX_be.flt.tb, file = file.path(data_dir, "TCGA.cohorts.GEX_be.flt.tb.Rda"))
+save(TCGA.PANCAN.sample_type.df, file = file.path(data_dir, "TCGA.PANCAN.sample_type.df.Rda"))
+
+
+# Save them as CSV files
+write.csv(TCGA.cohorts.GEX_be.flt.tb, file = "TCGA.cohorts.GEX_be.flt.tb.csv", row.names = FALSE)
+write.csv(TCGA.PANCAN.sample_type.df, file = "TCGA_PANCAN_sample_type_df.csv", row.names = FALSE)
+
